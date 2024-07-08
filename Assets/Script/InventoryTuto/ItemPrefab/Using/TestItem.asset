@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c93ecbf7cfea264fb368200022726b1, type: 3}
+  m_Name: TestItem
+  m_EditorClassIdentifier: 
+  _firstQuantity: 10
+  _itemID: 1002
+  itemName: Test
+  Description: test test
+  itemImage: {fileID: 21300000, guid: 5d9ba4e7d0964044ea54abe409d81dfd, type: 3}
+  itemType: 1
+  dropPrefab: {fileID: 7636647155919577337, guid: f1e476be3911977459785de9d92697cb, type: 3}
+  itemQuantity: 10
+  equipType: 10
+  canStack: 1
+  maxStackAmount: 99

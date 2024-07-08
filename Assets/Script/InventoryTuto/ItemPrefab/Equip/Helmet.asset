@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c93ecbf7cfea264fb368200022726b1, type: 3}
+  m_Name: Helmet
+  m_EditorClassIdentifier: 
+  _firstQuantity: 1
+  _itemID: 7
+  itemName: Helmet
+  Description: Heavy Helmet
+  itemImage: {fileID: 21300000, guid: fd6e4fc32c78509458fc45ea4a478ba8, type: 3}
+  itemType: 0
+  dropPrefab: {fileID: 1340338280708899992, guid: daf69c2b8d878cc499a3dba58ade93ab, type: 3}
+  itemQuantity: 1
+  equipType: 0
+  canStack: 0
+  maxStackAmount: 0
