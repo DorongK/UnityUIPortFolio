@@ -17,10 +17,21 @@ public class GameBehavior : MonoBehaviour, IManager
     public Canvas Inventory;
     public GameObject Shop;
     public GameObject Chatting;
+    public GameObject _Storagebox;
+    public GameObject _Equipment;
+
+
 
     private bool _isActiveInventory;
+    private bool _isActiveEquipment;
     private bool _isActiveShop;
-    private bool _isActiveChat;
+    private bool _isActiveBox;
+
+    public bool isActiveBox
+    {
+        get { return _isActiveBox; }
+        set { }
+    }
 
     private string _state;
 
@@ -71,29 +82,45 @@ public class GameBehavior : MonoBehaviour, IManager
         if (!_isActiveShop)
         {
             Shop.gameObject.SetActive(true);
+            Chatting.gameObject.SetActive(false);
             _isActiveShop = true;
         }
         else
         {
             Shop.gameObject.SetActive(false);
+            Chatting.gameObject.SetActive(true);
             _isActiveShop = false;
         }
     }
-    
-    public void InputChatting()
+
+    public void OpenBox()
     {
-        if (!_isActiveChat)
+        if (!_isActiveBox)
         {
-            Chatting.gameObject.SetActive(true);
-            _isActiveChat = true;
+            _Storagebox.gameObject.SetActive(true);
+            _isActiveBox = true;
         }
         else
         {
-            Chatting.gameObject.SetActive(false);
-            _isActiveChat = false;
+            _Storagebox.gameObject.SetActive(false);
+            _isActiveBox = false;
         }
     }
-    
+
+    public void OpenEquip()
+    {
+        if (!_isActiveEquipment)
+        {
+            _Equipment.gameObject.SetActive(true);
+            _isActiveEquipment = true;
+        }
+        else
+        {
+            _Equipment.gameObject.SetActive(false);
+            _isActiveEquipment = false;
+        }
+    }
+
     public void RestartScene()
     {
         Utilities.RestartLevel(0);

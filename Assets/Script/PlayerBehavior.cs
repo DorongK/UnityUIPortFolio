@@ -58,8 +58,9 @@ public class PlayerBehavior : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
              _gameManager.InputShop();
 
-        if (Input.GetKeyDown(KeyCode.Tab))
-            _gameManager.InputChatting();
+        if (Input.GetKeyDown(KeyCode.P))
+            _gameManager.OpenEquip();
+
 
         Interact();
         
@@ -70,12 +71,14 @@ public class PlayerBehavior : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E)&& curInteractGameobject != null)
         {
-            Debug.Log(curInteractGameobject.GetComponent<ItemObject>().itemdata.name + " In Your Bag!");  // 인벤토리 넣기
-            playerInventory.AddItem(curInteractGameobject.GetComponent<ItemObject>().itemdata);
-            //Destroy(curInteractGameobject);
-            if(curInteractGameobject!=null)
-            curInteractGameobject.GetComponent<ItemObject>().OnInteract();
+            if (curInteractable is ItemObject itemObject)
+            {
+                playerInventory.AddItem(curInteractGameobject.GetComponent<ItemObject>().itemdata);
+                curInteractable.OnInteract();
+            }
 
+            //if(curInteractGameobject!=null)
+            //curInteractGameobject.GetComponent<ItemObject>().OnInteract();
             _gameManager.UnsetPromptText();
         }
     }
@@ -90,6 +93,7 @@ public class PlayerBehavior : MonoBehaviour
             // 충돌한 물체 가져오기
             curInteractGameobject = collision.gameObject;
             curInteractable = collision.gameObject.GetComponent<IInteractable>();
+
             if(curInteractable!=null)
             _gameManager.SetPromptText(curInteractable);
         }

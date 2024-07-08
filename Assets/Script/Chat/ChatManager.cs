@@ -6,72 +6,212 @@ using TMPro;
 
 public enum ChatType
 {
-    Dialog,
+    Normal,
+    Notice,
+    Party,
+}
+public enum ChatTab
+{
+    All,
+    Party,
     Notice
 }
 
 public class ChatManager : MonoBehaviour
 {
-    [SerializeField] private Transform slotParent;
-    [SerializeField] private ChatSlot chatSlotPrefab; // 프리팹으로 변경
-    [SerializeField] private ChatSlot[] chatSlots;//하이어라키+채팅창에 표시될 Text객체
+    [SerializeField] private Transform allslotParent;
+    [SerializeField] private Transform partyslotParent;
+    [SerializeField] private Transform noticeslotParent;
 
-    public Dictionary<ChatType,Queue<ChatSlot>> chatLog;
-    public Queue<ChatSlot> dialog;
-    public Queue<ChatSlot> notice;
+    [SerializeField] private ChatSlot[] allChatSlots;//채팅창에 표시될 Text객체 ChatTab.All
+    [SerializeField] private ChatSlot[] partyChatSlots;//ChatTab.Party
+    [SerializeField] private ChatSlot[] noticeChatSlots;//ChatTab.Notice
+       
     public TMP_InputField inputField;
     public Button sendBtn;
-  
-    ScrollRect scroll_rect = null; //스크롤바 고정
+
+    public Button allTabBtn;
+    public Button partyTabBtn;
+    public Button noticeTabBtn;
+
+    public Button chatModeBtn;
+    public TMP_Text chatModeText;
+
+    ChatTab currentTab= ChatTab.All;
+    ChatType currentChat= ChatType.Normal;
+
+    ScrollRect scroll_rect = null; //스크롤바 고정울 위함.
     private int maxChatLogCount = 20; // 최대 채팅 로그 개수
-    private int currentSlotIndex = 0; // 현재 사용할 슬롯의 인덱스
+    private int allTabSlotIndex = 0;
+    private int partyTabSlotIndex = 0;
+    private int noticeTabSlotIndex = 0;
 
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        chatSlots = slotParent.GetComponentsInChildren<ChatSlot>();
+        allChatSlots = allslotParent.GetComponentsInChildren<ChatSlot>();
+        partyChatSlots = partyslotParent.GetComponentsInChildren<ChatSlot>();
+        noticeChatSlots = noticeslotParent.GetComponentsInChildren<ChatSlot>();
     }
 #endif
 
-    // Start is called before the first frame update
     void Start()
     {
         scroll_rect = FindObjectOfType<ScrollRect>();
-        chatLog = new Dictionary<ChatType, Queue<ChatSlot>>();
-        chatLog.Add(ChatType.Dialog, dialog);
-        chatLog.Add(ChatType.Notice, notice);
+                
         sendBtn.onClick.AddListener(SendButtonOnClicked);
-        // 모든 슬롯을 비활성화
-        foreach (var slot in chatSlots)
+        chatModeBtn.onClick.AddListener(ChangeCurrentChat);
+
+        allTabBtn.onClick.AddListener(() => SwitchTab(ChatTab.All));
+        partyTabBtn.onClick.AddListener(() => SwitchTab(ChatTab.Party));
+        noticeTabBtn.onClick.AddListener(() => SwitchTab(ChatTab.Notice));
+
+        foreach (var slot in allChatSlots)
         {
             slot.gameObject.SetActive(false);
         }
+        foreach (var slot in partyChatSlots)
+        {
+            slot.gameObject.SetActive(false);
+        }
+        foreach (var slot in noticeChatSlots)
+        {
+            slot.gameObject.SetActive(false);
+        }
+        SetTabVisibility(ChatTab.Notice, false);
+        SetTabVisibility(ChatTab.Party, false);
+
+
     }
 
-    // Update is called once per frame
     void Update()
     {
         if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && !inputField.isFocused) 
             SendButtonOnClicked();
+
+        if(Input.GetKeyDown(KeyCode.Tab))
+        {
+            ChangeCurrentChat();
+        }
     }
 
     public void ReceiveMsg(string msg,ChatType type)
     {
+        SetTabVisibility(ChatTab.All, false);
+        SetTabVisibility(ChatTab.Party, false);
+        SetTabVisibility(ChatTab.Notice, false);
+
+        SetTabVisibility(currentTab, true);
         //사용할 슬롯 가져오기
-        ChatSlot slot = chatSlots[currentSlotIndex];
+        ChatSlot slot = allChatSlots[allTabSlotIndex];
         slot.gameObject.SetActive(true);
-        if(type==ChatType.Dialog)
+        slot.transform.SetSiblingIndex(allslotParent.childCount - 1);
+        allTabSlotIndex = (allTabSlotIndex + 1) % maxChatLogCount;
+        switch (type)
         {
-            slot.SetDialogText(msg);
+            case ChatType.Normal:
+                slot.SetNormalText(msg);
+                break;
+            case ChatType.Party:
+                slot.SetPartyText(msg);
+                ChatSlot partyslot = partyChatSlots[partyTabSlotIndex];
+                partyslot.gameObject.SetActive(true);
+                partyslot.SetPartyText(msg);
+                partyslot.transform.SetSiblingIndex(partyslotParent.childCount - 1);
+                partyTabSlotIndex = (partyTabSlotIndex + 1) % maxChatLogCount;
+                break;
+            case ChatType.Notice:
+                slot.SetNoticeText(msg);
+                ChatSlot noticeslot = noticeChatSlots[noticeTabSlotIndex];
+                noticeslot.gameObject.SetActive(true);
+                noticeslot.SetNoticeText(msg);
+                noticeslot.transform.SetSiblingIndex(noticeslotParent.childCount - 1);
+                noticeTabSlotIndex = (noticeTabSlotIndex + 1) % maxChatLogCount;
+                break;
         }
-        else
-        {
-            slot.SetNoticeText(msg);
-        }
-        slot.transform.SetSiblingIndex(slotParent.childCount - 1);
-        currentSlotIndex = (currentSlotIndex + 1) % maxChatLogCount;
-         
+              
         StartCoroutine(ScrollUpdate());
+    }
+
+    public void SwitchTab(ChatTab next)
+    {
+        if (currentTab == next)
+            return;
+
+        SetTabVisibility(currentTab, false);
+        SetTabVisibility(next, true);
+
+        NotSelectedTabBtn(allTabBtn);
+        NotSelectedTabBtn(partyTabBtn);
+        NotSelectedTabBtn(noticeTabBtn);
+
+        currentTab = next;
+
+        switch (next)
+        {
+            case ChatTab.All:
+                SelectedTabBtn(allTabBtn);
+                break;
+            case ChatTab.Party:
+                SelectedTabBtn(partyTabBtn);
+                break;
+            case ChatTab.Notice:
+                SelectedTabBtn(noticeTabBtn);
+                break;
+        }
+    }
+
+    private void SetTabVisibility(ChatTab tab, bool isVisible)
+    {
+        switch (tab)
+        {
+            case ChatTab.All:
+                foreach (var slot in allChatSlots)
+                    slot.gameObject.SetActive(isVisible);
+                break;
+            case ChatTab.Party:
+                foreach (var slot in partyChatSlots)
+                    slot.gameObject.SetActive(isVisible);
+                break;
+            case ChatTab.Notice:
+                foreach (var slot in noticeChatSlots)
+                    slot.gameObject.SetActive(isVisible);
+                break;
+        }
+    }
+
+    public void SelectedTabBtn(Button btn)
+    {
+
+        btn.image.color = new Color(0.1f, 0.1f, 0.1f, 0.75f);
+
+    }
+    public void NotSelectedTabBtn(Button btn)
+    {
+        btn.image.color = new Color(0.1f, 0.1f, 0.1f, 0.4f);
+    }
+
+
+    public void ChangeCurrentChat()
+    {
+        switch(currentChat)
+        {
+            case ChatType.Normal:
+                currentChat += 1;
+                chatModeText.text = "Notice";
+                chatModeText.color = new Color(1, 1, 0, 1);
+                break;
+            case ChatType.Notice:
+                currentChat += 1;
+                chatModeText.text = "Party";
+                chatModeText.color = new Color(0, 0.6f, 1, 1);
+                break;
+            case ChatType.Party:
+                currentChat = 0;
+                chatModeText.text = "Normal";
+                chatModeText.color = new Color(1, 1, 1, 1);
+                break;
+        }
     }
 
     public void SendButtonOnClicked()//SendButton 클릭 이벤트
@@ -82,7 +222,7 @@ public class ChatManager : MonoBehaviour
             return;
         }
         string msg = string.Format("{0}", inputField.text);
-        ReceiveMsg(msg,ChatType.Dialog);
+        ReceiveMsg(msg,currentChat);
         InputStart();
     }
 

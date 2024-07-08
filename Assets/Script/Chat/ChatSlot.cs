@@ -9,30 +9,26 @@ public class ChatSlot : MonoBehaviour
 
     private void Awake()
     {
-        SetDialogColor();
-        _text.fontSize = 55;
+        _text.color = new Color(0, 0, 0, 0);
+        _text.fontSize = 20;
     }
    
-    public void SetDialogText(string str)
+    public void SetNormalText(string str)
     {
         _text.text = "User:" + str;
-        SetDialogColor();
+        _text.color = new Color(1, 1, 1, 1);
     }
-    
+
     public void SetNoticeText(string str)
     {
         _text.text = "[¾Ë¸²]" + str;
-        SetNoticeColor();
-    }
-
-    public void SetNoticeColor()
-    {
-        _text.color = new Color(1, 0.5f, 0, 1);
-    }
-
-    public void SetDialogColor()
-    {
         _text.color = new Color(1, 1, 0, 1);
+    }
+
+   public void SetPartyText(string str)
+    {
+        _text.text = "User:" + str;
+        _text.color = new Color(0, 0.6f, 1, 1);
     }
 }
    

@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Pants
   m_EditorClassIdentifier: 
   _firstQuantity: 1
+  _itemID: 9
   itemName: Pants
   Description: Flexible Pants
   itemImage: {fileID: 21300000, guid: b8fb302c5768e334ca82005f50e58121, type: 3}
   itemType: 0
-  dropPrefab: {fileID: 0}
+  dropPrefab: {fileID: 1340338280708899992, guid: 4f78773e5dafa104e988cc39da637623, type: 3}
   itemQuantity: 1
   equipType: 2
   canStack: 0

@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Axe
   m_EditorClassIdentifier: 
   _firstQuantity: 1
+  _itemID: 2
   itemName: Axe
   Description: Axe!
   itemImage: {fileID: 21300000, guid: 172774604c1bee84185a69041576525b, type: 3}
   itemType: 0
-  dropPrefab: {fileID: 0}
+  dropPrefab: {fileID: 1340338280708899992, guid: 18509a7b0b1e786488a6a24ceb67310c, type: 3}
   itemQuantity: 1
   equipType: 6
   canStack: 0

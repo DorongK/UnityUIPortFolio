@@ -26,8 +26,15 @@ public class Item : ScriptableObject
         ETC
     }
     [SerializeField] private int _firstQuantity;
-    
+    [SerializeField] private int _itemID;
+    public int ItemID
+    {
+        get { return _itemID; }
+        set { }
+    }
+
     [Header("Info")]
+
     public string itemName;
     public string Description;
     public Sprite itemImage;

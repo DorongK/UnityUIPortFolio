@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
+//다음에 만들때는 순서를 다 관리하지 말고 실제 Item정보가 들어있는 인벤토리 클래스에서 UI에는 ItemName/Image/Count/ItemType 정도만 넘겨서 서로 분리하는 것도 나쁘지않을듯?
 public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     [SerializeField] Image image;//슬롯이 띄울 이미지
@@ -14,8 +15,10 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
     public int slotidx;
     public int itemCount;
 
-    private Inventory _inventoryAtslot;
+    private Inventory _inventoryAtslot;//직접적인 객체참조...는 좋지 않은것 같은데 ...
     private Equipment _equipManager;
+    private GameBehavior _gameManager;
+
     private Item _item;
     public Item item
     {
@@ -44,39 +47,43 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
     {
         _equipManager = FindObjectOfType<Equipment>();
         _inventoryAtslot = FindObjectOfType<Inventory>();
+        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameBehavior>();
+
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            if (_item != null)
+            if (_gameManager.isActiveBox != true)
             {
-                if (_item.itemType == Item.ItemType.Equipment)
+                if (_item != null)
                 {
-                    //장착
-                    Debug.Log(item.itemName + "을 장착했습니다.");
-                    InventorySlotLog.ReceiveMsg(item.itemName + "을 장착했습니다.", ChatType.Notice);
-
-                    _equipManager.EquipItem(_item);
-                    ClearSlot();
-
-                }
-                else
-                {
-                    //소비
-                    Debug.Log(item.itemName + "을 사용했습니다.");
-                    InventorySlotLog.ReceiveMsg(item.itemName + "을 사용했습니다.", ChatType.Notice);
-
-                    itemCount--;
-                    textCount.text = itemCount.ToString();
-
-                    if (itemCount <= 0)
+                    if (_item.itemType == Item.ItemType.Equipment)
                     {
-                        itemCount = 0;
+                        //장착
+                        Debug.Log(item.itemName + "을 장착했습니다.");
+                        //InventorySlotLog.ReceiveMsg(item.itemName + "을 장착했습니다.", ChatType.Notice);
+                        _equipManager.EquipItem(_item);
                         ClearSlot();
+
+                    }
+                    else
+                    {
+                        //소비
+                        Debug.Log(item.itemName + "을 사용했습니다.");
+                        //InventorySlotLog.ReceiveMsg(item.itemName + "을 사용했습니다.", ChatType.Notice);
+                        itemCount--;
+                        textCount.text = itemCount.ToString();
+                        if (itemCount <= 0)
+                        {
+                            itemCount = 0;
+                            ClearSlot();
+                        }
                     }
                 }
+                else 
+                { }
             }
         }
         if (eventData.button == PointerEventData.InputButton.Left)
@@ -97,21 +104,20 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
         }
     }
 
-    // 마우스 드래그 중일 때 계속 발생하는 이벤트
-    public void OnDrag(PointerEventData eventData)
+    public void OnDrag(PointerEventData eventData)    // 마우스 드래그 중일 때 계속 발생하는 이벤트
+
     {
         if (item != null)
             DragSlot.instance.transform.position = eventData.position;
     }
 
-    // 마우스 드래그가 끝났을 때 발생하는 이벤트
-    public void OnEndDrag(PointerEventData eventData)
+    public void OnEndDrag(PointerEventData eventData)    // 마우스 드래그가 끝났을 때 발생하는 이벤트
+
     {
         DragSlot.instance.SetColor(0);
         DragSlot.instance.dragSlot = null;
     }
 
-    // 해당 슬롯에 무언가가 마우스 드롭 됐을 때 발생하는 이벤트
     public void OnDrop(PointerEventData eventData)//이건 드래그가 끝난 위치가 slot이라면,끝난위치에 있는 슬롯에서 발생.
     {
         if (DragSlot.instance.dragSlot != null)
@@ -121,7 +127,11 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
             _inventoryAtslot.SwapItems(idx1,idx2);
         }
 
-        //ChangeSlot();
+    }
+
+    public void OnUse()
+    {
+
     }
 
     public void ClearSlot()
@@ -131,18 +141,3 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
 }
 
 
-//private void ChangeSlot()
-//{
-//    Item _tempItem = item;//get한정자 실행예상
-//    item = DragSlot.instance.dragSlot.item;//set 한정자 실행예상//해당슬롯의 item을 드래그 해온 아이템으로 교체
-
-//    if (_tempItem != null)//원래 슬롯이 비어있지 않았다면 
-//    {
-//        DragSlot.instance.dragSlot.item = _tempItem;
-//        DragSlot.instance.SetColor(1);
-//    }
-//    else
-//    {
-//        DragSlot.instance.dragSlot.ClearSlot();
-//    }
-//}

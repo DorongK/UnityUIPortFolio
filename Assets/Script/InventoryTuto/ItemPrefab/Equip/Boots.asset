@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Boots
   m_EditorClassIdentifier: 
   _firstQuantity: 1
+  _itemID: 4
   itemName: Boots
   Description: StrongBoots
   itemImage: {fileID: 21300000, guid: e420c5bc93cb2604695a893500c897e3, type: 3}
   itemType: 0
-  dropPrefab: {fileID: 1340338280708899992, guid: 77c38a2a48eeeb444885566afbc80ea1, type: 3}
+  dropPrefab: {fileID: 1340338280708899992, guid: a9ff6ec282859d5429389f3484bba988, type: 3}
   itemQuantity: 1
   equipType: 5
   canStack: 0
