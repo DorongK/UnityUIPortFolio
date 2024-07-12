@@ -15,7 +15,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
     public int slotidx;
     public int itemCount;
 
-    private Inventory _inventoryAtslot;//직접적인 객체참조...는 좋지 않은것 같은데 ...
+    private Inventory _inventoryAtslot;
     private Equipment _equipManager;
     private GameBehavior _gameManager;
 
