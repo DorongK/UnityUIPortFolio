@@ -14,13 +14,11 @@ public class GameBehavior : MonoBehaviour, IManager
 
     public Button WinButton;
     public Button LoseButton;
-    public Canvas Inventory;
+    public GameObject Inventory;
     public GameObject Shop;
-    public GameObject Chatting;
-    public GameObject _Storagebox;
+    public GameObject _BoxUI;
     public GameObject _Equipment;
-
-
+    public GameObject Chatting;
 
     private bool _isActiveInventory;
     private bool _isActiveEquipment;
@@ -45,7 +43,9 @@ public class GameBehavior : MonoBehaviour, IManager
     {
         _state = "Game Manager initialized";
         Debug.Log(_state);
-       
+        _isActiveInventory = true;
+        _isActiveEquipment = true;
+        _isActiveBox = true;
     }
        
     public void UpdateScene(string updatedText)
@@ -97,12 +97,13 @@ public class GameBehavior : MonoBehaviour, IManager
     {
         if (!_isActiveBox)
         {
-            _Storagebox.gameObject.SetActive(true);
+            _BoxUI.gameObject.SetActive(true);
+            InputInventory();
             _isActiveBox = true;
         }
         else
         {
-            _Storagebox.gameObject.SetActive(false);
+            _BoxUI.gameObject.SetActive(false);
             _isActiveBox = false;
         }
     }
@@ -129,9 +130,7 @@ public class GameBehavior : MonoBehaviour, IManager
     // Start is called before the first frame update
     void Start()
     {
-       
-        Initialize();
-                
+         Initialize();
     }
 
     // Update is called once per frame

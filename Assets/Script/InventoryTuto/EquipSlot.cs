@@ -48,7 +48,6 @@ public class EquipSlot : MonoBehaviour, IPointerClickHandler
         {
             _inventoryAtEquipslot.AddItem(_item);
             Debug.Log(item.itemName + " 을 해제했습니다.");
-            //EquipSlotLog.ReceiveMsg(item.itemName + " 을 해제했습니다.", ChatType.Notice);
             _item = null;
             _equipment.RefreshDictionary(type);
         }

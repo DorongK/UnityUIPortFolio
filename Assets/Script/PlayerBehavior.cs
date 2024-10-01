@@ -76,12 +76,11 @@ public class PlayerBehavior : MonoBehaviour
                 playerInventory.AddItem(curInteractGameobject.GetComponent<ItemObject>().itemdata);
                 curInteractable.OnInteract();
             }
-            if (curInteractable is Box boxObject)
+            if (curInteractable is BoxObject boxObject)
             {
-                _gameManager.OpenBox();
+                Debug.Log( "Box열기 상호작용");
                 curInteractable.OnInteract();
             }
-
             //if(curInteractGameobject!=null)
             //curInteractGameobject.GetComponent<ItemObject>().OnInteract();
             _gameManager.UnsetPromptText();

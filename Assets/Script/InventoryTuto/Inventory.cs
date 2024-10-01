@@ -12,7 +12,7 @@ public class Inventory : InventoryBase
 
     private const int IntrosortDepthLimitFactor = 2;//2logN의 재귀를 넘어가면 힙소트로 전환
     private Equipment _equipManager;
-   
+    private Box _boxInventory;
     public Transform dropPosition;
     public Vector3 dropOffset = new Vector3(0f, 2f, 4f);
 
@@ -40,6 +40,7 @@ public class Inventory : InventoryBase
     private void Start()
     {
         _equipManager = FindObjectOfType<Equipment>();
+        _boxInventory= FindObjectOfType<Box>();
     }
 
     public void UpdateSlot(int idx)
@@ -54,59 +55,63 @@ public class Inventory : InventoryBase
             slots[i].slotidx = i;
         }
     }
-
-    public override void AddItem(Item _item)
+    public void AddStackItemToEmptySlot(Item _item,int count)
     {
-        if (_item.canStack)
+        for (int i = 0; i < slots.Length; i++)
         {
-            int leftAmount = _item.itemQuantity;
-            for (int i = 0; i < slots.Length; i++)
+            if (slots[i].item == null)
             {
-                if (slots[i].item != null && _item.itemName == slots[i].item.itemName)//같은 종류 확인
-                {
-                    int slotAmount = slots[i].itemCount + leftAmount;
-                    if (slots[i].itemCount < slots[i].item.maxStackAmount)
-                    {
-                        if (slotAmount > _item.maxStackAmount)
-                        {
-                            slots[i].itemCount = _item.maxStackAmount;
-                            leftAmount = slotAmount - _item.maxStackAmount;
-                        }
-                        else
-                        {
-                            slots[i].itemCount = slotAmount;
-                            return;
-                        }
-                    }
-                }//함수가 종료되지 않으면 남은 수량이 있는거임.
-            }
+                if (count <= 0)
+                    return;
 
-            for (int i = 0; i < slots.Length; i++)
-            {
-                if (slots[i].item == null)
+                slots[i].item = _item;
+                slots[i].position = ItemPosition.Inventory;
+                if (count > _item.maxStackAmount)
                 {
-                    slots[i].item = _item;
-                    if (leftAmount <= _item.maxStackAmount)
-                    {
-                        slots[i].itemCount = leftAmount;
-                        return;
-                    }
-                    else
-                    {
-                        slots[i].itemCount = _item.maxStackAmount;
-                        leftAmount -= _item.maxStackAmount;
-
-                    }
+                    slots[i].itemCount = _item.maxStackAmount;
+                    count -= _item.maxStackAmount;
+                    continue;
+                }
+                else
+                {
+                   
+                    slots[i].itemCount = count;
+                    count = 0;
+                    return;
                 }
             }
-            if (leftAmount > 0)
+        }
+        print("슬롯이 가득 차 있습니다.");
+        ThrowItem(_item, count);
+    }
+
+    public void AddStackItemToSameIDSlot(Item _item, int count)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].item != null && _item.itemName == slots[i].item.itemName && slots[i].itemCount < slots[i].item.maxStackAmount)//같은 종류 확인
             {
-                print("슬롯이 가득 차 있습니다.");
-                ThrowItem(_item, leftAmount);
+                int slotAmount = slots[i].itemCount + count;
+                if (slotAmount > _item.maxStackAmount)
+                {
+                    slots[i].itemCount = _item.maxStackAmount;
+                    count = slotAmount - _item.maxStackAmount;
+                }
+                else
+                {
+                    slots[i].itemCount = slotAmount;
+                    count = 0;
+                    return;
+                }
 
             }
         }
-        //Canstack이 아닌 아이템
+        print("같은 ID의 아이템이 없습니다.");
+        AddStackItemToEmptySlot(_item,count);
+    }
+
+    public void AddItemToEmptySlot(Item _item)
+    {
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i].item != null)
@@ -116,10 +121,48 @@ public class Inventory : InventoryBase
             else//비어있는 칸에 바로넣기. 만약 모든 인벤토리가 차있다면 return문을 만나지 못하고 for문이 끝나버린다.
             {
                 slots[i].item = _item;
+                slots[i].itemCount = 1;
+                slots[i].position = ItemPosition.Inventory;
                 return;
             }
         }
         print("슬롯이 가득 차 있습니다.");
+        ThrowItem(_item, 1);
+    }
+    public override void AddItem(Item _item, int count)
+    {
+        if (_item.canStack)
+        {
+            if (_item.maxStackAmount < count)
+            {
+                AddStackItemToEmptySlot(_item, count);
+            }
+            else
+            {
+                AddStackItemToSameIDSlot(_item, count);
+            }
+            return;
+        }
+        AddItemToEmptySlot(_item);
+
+    }
+
+    public override void AddItem(Item _item)
+    {
+        if (_item.canStack)
+        {
+            if (_item.maxStackAmount < _item.itemQuantity)
+            {
+                AddStackItemToEmptySlot(_item, _item.itemQuantity);
+            }
+            else
+            {
+                AddStackItemToSameIDSlot(_item, _item.itemQuantity);
+            }
+            return;
+        }
+        AddItemToEmptySlot(_item);
+
     }
 
     public void SelectItem(int selected)
@@ -143,6 +186,33 @@ public class Inventory : InventoryBase
             itemObject.itemdata = item;
             itemObject.itemdata.itemQuantity = quantity;
         }
+    }
+
+    public int FindSameIDIdx(int boxItemID)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if(slots[i].item!=null&& slots[i].item.ItemID==boxItemID)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public Item ItemAtIdx(int i)
+    {
+        if (slots[i].item != null)
+            return slots[i].item;
+        else
+            return null;
+    }
+    public int ItemCountAtIdx(int i)
+    {
+        if (slots[i].item != null)
+            return slots[i].itemCount;
+        else
+            return -1;
     }
 
     public void OnDropButton()
