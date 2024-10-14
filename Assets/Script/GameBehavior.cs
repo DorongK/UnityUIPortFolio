@@ -9,16 +9,19 @@ using UnityEngine.SceneManagement;
 public class GameBehavior : MonoBehaviour, IManager
 {
     public int MaxItem = 1;
-       public TextMeshProUGUI promptText;
+    public TextMeshProUGUI promptText;
 
 
     public Button WinButton;
     public Button LoseButton;
+
+    public GameObject Player;
     public GameObject Inventory;
     public GameObject Shop;
     public GameObject _BoxUI;
     public GameObject _Equipment;
     public GameObject Chatting;
+    public GameObject Data;
 
     private bool _isActiveInventory;
     private bool _isActiveEquipment;
@@ -46,6 +49,9 @@ public class GameBehavior : MonoBehaviour, IManager
         _isActiveInventory = true;
         _isActiveEquipment = true;
         _isActiveBox = true;
+        InputInventory();
+        OpenBox();
+        OpenEquip();
     }
        
     public void UpdateScene(string updatedText)

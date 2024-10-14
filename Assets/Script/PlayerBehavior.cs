@@ -2,6 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
+
+
+
+[Serializable]
+public class StatInfo
+{
+    public List<Structs.PlayerStat> Stats;
+}
 
 public class PlayerBehavior : MonoBehaviour
 {
@@ -23,6 +32,9 @@ public class PlayerBehavior : MonoBehaviour
     private float _hInput;
     private bool _isJumping;
     private bool _isShooting;
+
+    private Structs.PlayerStat mStat;
+    private Structs.GrowStatTable mGrowTable;
     
     private Rigidbody _rb;
     private CapsuleCollider _col;
@@ -30,7 +42,31 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField]
     private Inventory playerInventory;
 
-    void Start()
+    public Structs.PlayerStat getStat
+    {
+        get { return mStat; }
+        set { }
+    }
+    public Structs.GrowStatTable getGrowStat
+    {
+        get { return mGrowTable; }
+        set { }
+    }
+
+    public void LoadPlayerStat(Structs.PlayerStat stat)
+    {
+        mStat = stat;
+        Debug.LogFormat("name: {0} - health:{1}", mStat.name, mStat.health);
+
+    }
+    public void LoadGrowStatTable(Structs.GrowStatTable growtable)
+    {
+        mGrowTable = growtable;
+        Debug.LogFormat("helath: {0} - depense:{1}", mGrowTable.health, mGrowTable.depense);
+
+    }
+
+    private void Start()
     {
         _rb = GetComponent<Rigidbody>();
         _col = GetComponent<CapsuleCollider>();

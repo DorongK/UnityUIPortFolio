@@ -18,6 +18,10 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
     [SerializeField] Image image;//슬롯이 띄울 이미지
     [SerializeField] TMP_Text textCount;
     [SerializeField] private ChatManager InventorySlotLog;//얘네들 나중에 채팅매니저에서 Log함수 콜백으로 받게 하면 될듯?
+    [SerializeField] private Inventory _inventory;
+    [SerializeField] private Equipment _equipManager;
+    [SerializeField] private Box _BoxInventory;    //이거를 현재 상호작용하는것으로 동적할당하면 박스 여러개 만들어도 될듯?
+
 
     public int slotidx;
     
@@ -27,10 +31,6 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
         get { return _position; }
         set { _position = value; }
     }
-
-    private Inventory _inventory;
-    private Equipment _equipManager;
-    private Box _BoxInventory;//이거를 현재 상호작용하는것으로 동적할당하면 박스 여러개 만들어도 될듯?
 
     private GameBehavior _gameManager;
 
@@ -80,13 +80,10 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDra
 
     private void Start()
     {
-        _equipManager = FindObjectOfType<Equipment>();
         if (_equipManager == null) Debug.LogWarning("EquipManager가 초기화되지 않았습니다.");
 
-        _inventory = FindObjectOfType<Inventory>();
         if (_inventory == null) Debug.LogWarning("Inventory가 초기화되지 않았습니다.");
 
-        _BoxInventory = FindObjectOfType<Box>();
         if (_BoxInventory == null) Debug.LogWarning("BoxInventory가 초기화되지 않았습니다.");
 
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameBehavior>();

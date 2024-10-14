@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Equipment : MonoBehaviour
@@ -7,6 +8,19 @@ public class Equipment : MonoBehaviour
     [SerializeField] private Transform equipslotParent;
     [SerializeField] EquipSlot[] equipSlots;
     [SerializeField] Inventory _equipToInventory;
+    [SerializeField] PlayerBehavior _player;
+
+    [Header("Player Stats")]
+    public TextMeshProUGUI HpText;
+    public TextMeshProUGUI AttackText;
+    public TextMeshProUGUI DefenceText;
+    public TextMeshProUGUI AttackSpeedText;
+    public TextMeshProUGUI APText;
+    public TextMeshProUGUI CriticalChanceText;
+    public TextMeshProUGUI CriticalDamageText;
+    public TextMeshProUGUI LevelText;
+
+
 
     private Dictionary<EquipType, EquipSlot> CurrentEquip;
 
@@ -26,6 +40,8 @@ public class Equipment : MonoBehaviour
     private void Start()
     {
         _equipToInventory = FindObjectOfType<Inventory>();
+        UpdateText();
+
     }
 
     public void InitializeSlot()
@@ -39,6 +55,17 @@ public class Equipment : MonoBehaviour
                 CurrentEquip.Add(slot.type, slot);
             }
         }
+    }
+    public void UpdateText()
+    {
+        HpText.text = _player.getStat.health.ToString();
+        AttackText.text = _player.getStat.attack.ToString();
+        DefenceText.text= _player.getStat.depense.ToString();
+        AttackSpeedText.text = _player.getStat.attackSpeed.ToString();
+        APText.text = _player.getStat.skillability.ToString();
+        CriticalChanceText.text = _player.getStat.criticalChance.ToString()+"%";
+        CriticalDamageText.text = _player.getStat.criticalDamageMultiplier.ToString()+"%";
+        LevelText.text = "LV."+_player.getStat.level.ToString();
     }
 
     public void RefreshSlot(EquipType changed)//변경사항이 있는 슬롯에만 정보를 갱신하기

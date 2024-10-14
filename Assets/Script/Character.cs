@@ -1,16 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// 구조체에서는 필드에서 static이나 const 로 지정하지 않는 한, 클래스처럼 내부에서 초기화 할 수 없다.
 /// 매개변수가 없는 생성자는 오류발생. 모든 변수를 기본 할당값으로 지정해주는 생성자가 제공된다.
 /// </summary>
-public struct Weapon
+
+[Serializable]
+public class Weapon
 {
     public string name;
     public int Attack;
+    public Weapon(string _name,int _attack)
+    {
+        name = _name;
+        Attack = _attack;
+    }
 }
+
+[Serializable]
+public class WeaponShop
+{
+    public List<Weapon> weaponShop;
+}
+
 /// <summary>
 /// class는 참조타입, struct는 값타입. 구조체는 원본을 참조하지 않고 복사해서 전달한다.
 /// </summary>
@@ -24,7 +39,7 @@ public class Character : MonoBehaviour
     }
     public Character(string name)
     {
-        this.Charactername = name;
+        Charactername = name;
     }
     public virtual void PrintStatInfo()
     {

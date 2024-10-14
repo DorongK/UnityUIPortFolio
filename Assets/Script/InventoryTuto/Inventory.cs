@@ -9,10 +9,11 @@ using System;
 public class Inventory : InventoryBase
 {
     [SerializeField] private ChatManager InventoryLog;
+    [SerializeField] private Equipment _equipManager;
+    [SerializeField] private Box _boxInventory;
+
 
     private const int IntrosortDepthLimitFactor = 2;//2logN의 재귀를 넘어가면 힙소트로 전환
-    private Equipment _equipManager;
-    private Box _boxInventory;
     public Transform dropPosition;
     public Vector3 dropOffset = new Vector3(0f, 2f, 4f);
 
@@ -39,8 +40,7 @@ public class Inventory : InventoryBase
 
     private void Start()
     {
-        _equipManager = FindObjectOfType<Equipment>();
-        _boxInventory= FindObjectOfType<Box>();
+       
     }
 
     public void UpdateSlot(int idx)

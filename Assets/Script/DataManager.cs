@@ -4,6 +4,8 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.Xml;
+using System.Text;
+
 
 /// <summary>
 /// File클래스와 Stream 객체를 사용한 읽고 쓰기
@@ -11,11 +13,26 @@ using System.Xml;
 /// </summary>
 public class DataManager : MonoBehaviour,IManager
 {
+    [SerializeField]
+    private PlayerBehavior Player;
+
     private string _state;
     private string _dataPath;
     private string _textFile;
     private string _streamingTextFile;
     private string _xmlLevelProgress;
+    private string _jsonWeapons;
+
+    private string _jsonplayerStat;
+    private string _jsonplayerGrowStat;
+
+    private List<Weapon> weaponInventory = new List<Weapon>
+    {
+        new Weapon("Sword of Doom", 100),
+        new Weapon("Butterfly Knife", 15),
+        new Weapon("Brass Knuckles", 15),
+
+    };
 
     void Awake()
     {
@@ -24,6 +41,10 @@ public class DataManager : MonoBehaviour,IManager
         _textFile = _dataPath + "Save_Data.txt";
         _streamingTextFile = _dataPath + "Streaming_Save_Date.txt";
         _xmlLevelProgress = _dataPath + "Progress_Data.xml";
+        _jsonWeapons = _dataPath + "WeaponJson.json";
+        _jsonplayerStat = _dataPath + "PlayerStat.json";
+        _jsonplayerGrowStat = _dataPath + "GrowStatTable.json";
+
     }
     //xml 데이터 관리
     public void WriteToXML(string filename)
@@ -77,7 +98,6 @@ public class DataManager : MonoBehaviour,IManager
         StreamReader streamReader = new StreamReader(filename);
         Debug.Log(streamReader.ReadToEnd());
     }
-
 
     //File클래스 읽고 쓰기
     public void NewDirectory()
@@ -145,8 +165,53 @@ public class DataManager : MonoBehaviour,IManager
         Debug.Log("File SuccessFully Deleted!");
     }
 
+    public void SerializeJson()
+    {
+        WeaponShop shop = new WeaponShop();
+        shop.weaponShop = weaponInventory;
+        string jsonString = JsonUtility.ToJson(shop, true);
+        using (StreamWriter stream = File.CreateText(_jsonWeapons))
+        {
+            stream.WriteLine(jsonString);
+        }
 
+    }
+    public void DeSerializeJson()
+    {
+        if(File.Exists(_jsonWeapons))
+        { 
+            using(StreamReader stream =new StreamReader(_jsonWeapons))
+            {
+                var jsonString = stream.ReadToEnd();
+                var weaponData = JsonUtility.FromJson<WeaponShop>(jsonString);
+                foreach( var weapon in weaponData.weaponShop)
+                {
+                    Debug.LogFormat("Weapon: {0} - Damage:{1}", weapon.name, weapon.Attack);
+                }
+            }
+        }
+        if (File.Exists(_jsonplayerStat))
+        {
+            using (StreamReader stream = new StreamReader(_jsonplayerStat))
+            {
+                var jsonString = stream.ReadToEnd();
+                var statData = JsonUtility.FromJson<Structs.PlayerStat>(jsonString);
+                Player.LoadPlayerStat(statData);
+            }
+        }
+        if (File.Exists(_jsonplayerGrowStat))
+        {
+            using (StreamReader stream = new StreamReader(_jsonplayerGrowStat))
+            {
+                var jsonString = stream.ReadToEnd();
+                var growTableData = JsonUtility.FromJson<Structs.GrowStatTable>(jsonString);
+                Player.LoadGrowStatTable(growTableData);
 
+            }
+        }
+    }
+
+    
     public string State
     {
         get { return _state; }
@@ -170,6 +235,8 @@ public class DataManager : MonoBehaviour,IManager
         //WriteToStream(_streamingTextFile);
         WriteToXML(_xmlLevelProgress);
         ReadFromStream(_xmlLevelProgress);
+        SerializeJson();
+        DeSerializeJson(); 
     }
 
     public void FileSystemInfo()
